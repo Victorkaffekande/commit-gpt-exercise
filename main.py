@@ -1,16 +1,16 @@
+from __future__ import annotations
+
 import argparse
-import os
-import git
-import json
-import time
-import requests
 from typing import List, Dict
+
+import git
+import requests
 
 SYSTEM_PROMPT = """
 Instruct the LLM in what to do with the data that is provided to it.
 """
-MODEL_NAME = ""  # TODO: Replace with the actual model name from gpt4all
-API_ENDPOINT = ""  # TODO: Replace with the actual API endpoint from gpt4all
+MODEL_NAME = "TheBloke/Llama-2-7b-chat-GGUF"  # TODO: Replace with the actual model name from gpt4all
+API_ENDPOINT = "http://localhost:4891/v1/chat/completions"  # TODO: Replace with the actual API endpoint from gpt4all
 
 API_KEY = "YOUR_API_KEY"  # TODO: Replace with the actual API key from gpt4all (maybe not needed)
 MAX_RETRIES = 3  # Number of retries for the LLM API call
@@ -92,6 +92,13 @@ def get_git_diffs(repo_path: str) -> str:
 
 
 def generate_commit_message(diffs: str) -> str | None:
+    body = {
+        "model": MODEL_NAME,
+        "messages": [{"role": "user", "content": "Who is Lionel Messi?"}],
+        "max_tokens": 50,
+        "temperature": 0.28
+    }
+    requests.post(url=API_ENDPOINT, params=body)
     # TODO: Implement the logic to generate the commit message from the LLM response
     return None
 
