@@ -9,8 +9,8 @@ import requests
 SYSTEM_PROMPT = """
 Instruct the LLM in what to do with the data that is provided to it.
 """
-MODEL_NAME = "TheBloke/Llama-2-7b-chat-GGUF"  # TODO: Replace with the actual model name from gpt4all
-API_ENDPOINT = "http://localhost:4891/v1/chat/completions"  # TODO: Replace with the actual API endpoint from gpt4all
+MODEL_NAME = "TheBloke/Llama-2-7b-chat-GGUF"
+API_ENDPOINT = "http://localhost:4891/v1/chat/completions"
 
 API_KEY = "YOUR_API_KEY"  # TODO: Replace with the actual API key from gpt4all (maybe not needed)
 MAX_RETRIES = 3  # Number of retries for the LLM API call
@@ -92,19 +92,28 @@ def get_git_diffs(repo_path: str) -> str:
 
 
 def generate_commit_message(diffs: str) -> str | None:
-    body = {
-        "model": MODEL_NAME,
-        "messages": [{"role": "user", "content": "Who is Lionel Messi?"}],
-        "max_tokens": 50,
-        "temperature": 0.28
-    }
-    requests.post(url=API_ENDPOINT, params=body)
     # TODO: Implement the logic to generate the commit message from the LLM response
+    return call_llm_api(f"Here is a git diff. Make a commit message from them: {diffs}")
     return None
 
 
 def call_llm_api(prompt: str) -> str | None:
-    # TODO: Implement the logic to call the LLM API
+    body = {
+        "model": MODEL_NAME,
+        "messages": [{"role": "user", "content": f"{prompt}"}],
+        "max_tokens": 300,
+        "temperature": 0.28
+    }
+    response = requests.post(url=API_ENDPOINT, json=body)
+    if response.status_code == 200:
+        # Parse the JSON response
+        result = response.json()
+        # Extract the answer (adjust based on your API's response structure)
+        answer = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+        return answer
+    else:
+        print("Request failed with status code:", response.status_code)
+        print("Response:", response.content)
     return None
 
 
